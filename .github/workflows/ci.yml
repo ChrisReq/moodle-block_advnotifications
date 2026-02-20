@@ -11,8 +11,7 @@ jobs:
         image: postgres:14
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: moodle
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         options: >-
@@ -24,8 +23,8 @@ jobs:
       mariadb:
         image: mariadb:10.6
         env:
-          MYSQL_USER: root
           MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_DATABASE: moodle
           MYSQL_CHARACTER_SET_SERVER: utf8mb4
           MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
         ports:
