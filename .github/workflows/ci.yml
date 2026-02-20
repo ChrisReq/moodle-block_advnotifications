@@ -24,7 +24,6 @@ jobs:
         image: mariadb:10.6
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_DATABASE: moodle
           MYSQL_CHARACTER_SET_SERVER: utf8mb4
           MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
         ports:
@@ -101,7 +100,7 @@ jobs:
 
       - name: Mustache Lint
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci mustachelint
+        run: moodle-plugin-ci mustache
 
       - name: CSS Style check
         if: ${{ !cancelled() }}
