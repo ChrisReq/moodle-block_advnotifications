@@ -51,7 +51,7 @@
 
 module.exports = function(grunt) {
     let decachephp = "../../admin/cli/purge_caches.php";
-    const sass = require('node-sass');
+    const sass = require('sass');
 
     grunt.initConfig({
         watch: {
