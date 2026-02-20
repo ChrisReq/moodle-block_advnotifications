@@ -25,8 +25,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once('locallib.php');
-
 global $CFG;
 
 if ($ADMIN->fulltree) {
@@ -97,7 +95,7 @@ if ($ADMIN->fulltree) {
     );
 
     // DATE FORMAT.
-    $options = get_date_formats();
+    $options = \block_advnotifications\local\notification_manager::get_date_formats();
     $settings->add(
         new admin_setting_configselect(
             'block_advnotifications/dateformat',                                                            // NAME.

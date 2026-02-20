@@ -69,7 +69,7 @@ defined('MOODLE_INTERNAL') || die;
                 'user' => CAP_PREVENT,
                 'student' => CAP_PREVENT,
                 'teacher' => CAP_PREVENT,
-                'editingteacher' => CAP_PREVENT,
+                'editingteacher' => CAP_ALLOW,
                 'coursecreator' => CAP_PREVENT,
                 'manager' => CAP_ALLOW,
             )

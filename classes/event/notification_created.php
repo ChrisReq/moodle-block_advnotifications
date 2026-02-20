@@ -58,7 +58,7 @@ class notification_created extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/block/advnotifications/notifications.php', array('blockid' => $this->contextinstanceid));
+        return new \moodle_url('/blocks/advnotifications/pages/notifications.php', array('blockid' => $this->contextinstanceid));
     }
 
     /**

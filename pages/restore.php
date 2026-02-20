@@ -95,7 +95,6 @@ if (!$table->is_downloading()) {
     // Print the page header.
     $PAGE->set_title(get_string('advnotifications_restore_table_title', 'block_advnotifications'));
     $PAGE->set_heading(get_string('advnotifications_restore_table_heading', 'block_advnotifications'));
-    $PAGE->requires->jquery();
     $PAGE->requires->js_call_amd('block_advnotifications/custom', 'initialise');
     $PAGE->navbar->add(get_string('blocks'));
     $PAGE->navbar->add(get_string('pluginname', 'block_advnotifications'));

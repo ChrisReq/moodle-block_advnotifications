@@ -91,7 +91,6 @@ if (!$table->is_downloading()) {
     // Print the page header.
     $PAGE->set_title(get_string('advnotifications_table_title', 'block_advnotifications'));
     $PAGE->set_heading(get_string('advnotifications_table_heading', 'block_advnotifications'));
-    $PAGE->requires->jquery();
     $PAGE->requires->js_call_amd('block_advnotifications/custom', 'initialise');
     if (isset($bcontext) && $ccontext = $bcontext->get_course_context(false)) {
         $course = $DB->get_field('course', 'fullname', ['id' => $ccontext->instanceid]);

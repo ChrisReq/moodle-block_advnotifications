@@ -102,7 +102,17 @@ function xmldb_block_advnotifications_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021010616, 'advnotifications');
     }
 
-    // Add future upgrade points here.
+    // v2.0.0 – Confirm seen field is INT(10) on all installations.
+    // Ensures no PostgreSQL instance still has a SMALLINT (max 32,767) for the seen
+    // column; change_field_precision is idempotent so it is safe to call again.
+    if ($oldversion < 2026022000) {
+        $table = new xmldb_table('block_advnotificationsdissed');
+        $field = new xmldb_field('seen', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        $dbman->change_field_precision($table, $field);
+
+        upgrade_block_savepoint(true, 2026022000, 'advnotifications');
+    }
 
     return true;
 }

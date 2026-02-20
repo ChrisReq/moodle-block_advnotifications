@@ -28,7 +28,7 @@ require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 
 try {
     require_sesskey();
-} catch (EXCEPTION $e) {
+} catch (Exception $e) {
     header('HTTP/1.0 403 Forbidden');
     echo json_encode(array("result" => "Failed",
         "Notification" => get_string('advnotifications_err_forbidden', 'block_advnotifications')));

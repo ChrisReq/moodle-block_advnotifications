@@ -15,143 +15,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library of functions for the plugin to leverage.
+ * Backward-compatibility shim – logic has moved to
+ * \block_advnotifications\local\notification_manager.
  *
  * @package    block_advnotifications
- * @copyright  2018 LearningWorks Ltd - learningworks.co.nz
+ * @copyright  2016 onwards LearningWorks Ltd {@link https://learningworks.co.nz/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @deprecated since v2.0.0 – use \block_advnotifications\local\notification_manager directly.
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * This functions determines which notifications to render and what their attributes should be.
+ * Wrapper kept for backward compatibility. Use notification_manager::prep_notifications() instead.
  *
- * @param   mixed $instanceid Block instance id.
- * @return  array Array of notifications' attributes needed for rendering.
- * @throws  dml_exception
+ * @param  mixed $instanceid Block instance id.
+ * @return array
+ * @throws dml_exception
+ * @deprecated since v2.0.0
  */
 function prep_notifications($instanceid) {
-    global $DB, $USER;
-
-    $filternotif = false;
-    // Check if we should apply filters to title/message or not.
-    if (get_config('block_advnotifications', 'multilang')) {
-        $filternotif = true;
-    }
-
-    // Notifications to render.
-    $rendernotif = [];
-
-    // CONDITIONS - add any future conditions here.
-    $conditions = array();
-    // No deleted notifications.
-    $conditions['deleted'] = 0;
-    // No disabled notifications.
-    $conditions['enabled'] = 1;
-
-    // Get notifications with conditions from above.
-    $allnotifs = $DB->get_records('block_advnotifications', $conditions);
-
-    foreach ($allnotifs as $notif) {
-        // Keep track of number of times the user has seen the notification.
-        // Check if a record of the user exists in the dismissed/seen table.
-        // TODO: Move DB queries out of loop.
-        $userseen = $DB->get_record('block_advnotificationsdissed',
-            array('user_id' => $USER->id, 'not_id' => $notif->id)
-        );
-
-        // Get notification settings to determine whether to render it or not.
-        $render = false;
-
-        // Check if forever or in date-range.
-        if (($notif->date_from === $notif->date_to) || ($notif->date_from < time() && $notif->date_to > time())) {
-            $render = true;
-        }
-
-        // Don't render if user has seen it more (or equal) to the times specified or if they've dismissed it.
-        if ($userseen !== false) {
-            if (($userseen->seen >= $notif->times && $notif->times != 0) || ($userseen->dismissed > 0)) {
-                $render = false;
-            }
-        }
-
-        // Don't render if notification isn't a global notification and the instanceid's/blockid's don't match.
-        if ($notif->blockid != $instanceid && $notif->global == 0) {
-            $render = false;
-        }
-
-        if ($render) {
-            // Update how many times the user has seen the notification.
-            if ($userseen === false) {
-                $seenrecord = new stdClass();
-                $seenrecord->user_id = $USER->id;
-                $seenrecord->not_id = $notif->id;
-                $seenrecord->dismissed = 0;
-                $seenrecord->seen = 1;
-
-                $DB->insert_record('block_advnotificationsdissed', $seenrecord);
-            } else {
-                $upseenrecord = new stdClass();
-                $upseenrecord->id = $userseen->id;
-                $upseenrecord->seen = $userseen->seen + 1;
-
-                $DB->update_record('block_advnotificationsdissed', $upseenrecord);
-            }
-
-            // Get type to know which (bootstrap) class to apply.
-            $aicon = '';
-
-            // Allows for custom styling and serves as a basic filter if anything unwanted was somehow submitted.
-            if ($notif->type == "info" || $notif->type == "success" || $notif->type == "warning" || $notif->type == "danger") {
-                $aicon = $notif->type;
-            } else {
-                $notif->type = ($notif->type == "announcement") ? 'info announcement' : 'info';
-                $aicon = 'info';
-            }
-
-            // Extra classes to add to the notification wrapper - at least having the 'type' of alert.
-            $extraclasses = ' ' . $notif->type;
-            if ($notif->dismissible == 1) {
-                $extraclasses .= ' dismissible';
-            }
-            if ($notif->times > 0) {
-                $extraclasses .= ' limitedtimes';
-            }
-            if ($notif->aicon == 1) {
-                $extraclasses .= ' aicon';
-            }
-
-            // Construct notification - also format title/text to support multilang (filtered) strings.
-            $rendernotif[] = array('extraclasses' => $extraclasses,                                         // Additional classes.
-                'notifid' => $notif->id,                                                                    // Notification id.
-                'alerttype' => $notif->type,                                                                // Alert type (styling).
-                'aiconflag' => $notif->aicon,                                                               // Render icon flag.
-                'aicon' => $aicon,                                                                          // Which icon to render.
-                'title' => $filternotif ? format_text($notif->title, FORMAT_HTML) : $notif->title,          // Title.
-                'message' => $filternotif ? format_text($notif->message, FORMAT_HTML) : $notif->message,    // Notification text.
-                'dismissible' => $notif->dismissible);                                                      // Dismissible flag.
-        }
-    }
-
-    return $rendernotif;
+    return \block_advnotifications\local\notification_manager::prep_notifications((int)$instanceid);
 }
 
 /**
- * Get date formats supported byt the plugin.
+ * Wrapper kept for backward compatibility. Use notification_manager::get_date_formats() instead.
  *
- * @return  array   Array of formats as key and today's date in that format as value.
+ * @return array
+ * @deprecated since v2.0.0
  */
 function get_date_formats() {
-    $formats = [];
-
-    // Add supported formats to array.
-    $formats['d/m/Y'] = date('d/m/Y');
-    $formats['j/n/y'] = date('j/n/y');
-    $formats['m-d-Y'] = date('m-d-Y');
-    $formats['n-j-y'] = date('n-j-y');
-    $formats['j M y'] = date('j M y');
-    $formats['j F Y'] = date('j F Y');
-
-    return $formats;
+    return \block_advnotifications\local\notification_manager::get_date_formats();
 }

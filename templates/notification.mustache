@@ -1,0 +1,46 @@
+{{!
+    @template block_advnotifications/notification
+
+    Renders one or more advanced notification alerts.
+
+    Context variables required for this template:
+    * notifications - Array of notification objects, each with:
+      - extraclasses {string} Additional CSS classes for the wrapper (starts with a space).
+      - notifid {int} Notification ID used by JS for dismiss tracking.
+      - alerttype {string} Bootstrap alert type: info, success, warning, danger.
+      - hasicon {bool} Whether to render the type icon.
+      - aiconurl {string} URL of the icon image (only used when hasicon is true).
+      - title {string} Notification title (may contain HTML).
+      - message {string} Notification body text (may contain HTML).
+      - dismissible {bool} Whether to render the dismiss (×) button.
+
+    Example context (json):
+    {
+        "notifications": [
+            {
+                "extraclasses": " info dismissible aicon",
+                "notifid": 1,
+                "alerttype": "info",
+                "hasicon": true,
+                "aiconurl": "http://example.com/pix/info.png",
+                "title": "Site maintenance",
+                "message": "The site will be offline on Saturday.",
+                "dismissible": true
+            }
+        ]
+    }
+}}
+{{#notifications}}
+<div class="notification-block-wrapper{{extraclasses}}" data-dismiss="{{notifid}}">
+    <div class="alert alert-{{alerttype}}">
+        {{#hasicon}}
+        <img class="notification_aicon" src="{{aiconurl}}"/>
+        {{/hasicon}}
+        {{#title}}<strong>{{{title}}}</strong> {{/title}}
+        {{#message}}{{{message}}}{{/message}}
+        {{#dismissible}}
+        <div class="notification-block-close"><strong>&times;</strong></div>
+        {{/dismissible}}
+    </div>
+</div>
+{{/notifications}}
