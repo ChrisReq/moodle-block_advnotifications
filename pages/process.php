@@ -108,10 +108,12 @@ $datefrom == "" ? $datefrom = 0 : $datefrom = strtotime($datefrom);
 $dateto == "" ? $dateto = 0 : $dateto = strtotime($dateto);
 
 if (isset($dismiss) && $dismiss != '') {
-    $notification = $DB->get_record('block_advnotifications',
+    $notification = $DB->get_record(
+        'block_advnotifications',
         ['id' => $dismiss]
     );
-    $userdissed = $DB->get_record('block_advnotificationsdissed',
+    $userdissed = $DB->get_record(
+        'block_advnotificationsdissed',
         ['user_id' => $USER->id, 'not_id' => $dismiss]
     );
 
@@ -186,7 +188,7 @@ if (isset($tableaction) && $tableaction != '') {
                 'old_message' => $old->message,
                 'old_date_from' => $old->date_from,
                 'old_date_to' => $old->date_to,
-            ]
+            ],
         ];
         if ($blockinstance > 0) {
             $params['context'] = context_block::instance($blockinstance);
@@ -295,7 +297,7 @@ if ($purpose == 'update') {
     $event->trigger();
 
     if ($ajax) {
-        echo json_encode(array("updated" => $title));
+        echo json_encode(["updated" => $title]);
         exit();
     } else {
         redirect(
@@ -334,8 +336,10 @@ if ($purpose == "add") {
             exit();
         } else {
             // Redirect with Error.
-            redirect(new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
-                get_string('advnotifications_err_req', 'block_advnotifications', $error));
+            redirect(
+                new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
+                get_string('advnotifications_err_req', 'block_advnotifications', $error)
+            );
         }
     }
 

@@ -49,7 +49,7 @@ class advnotifications_restore_table extends advnotifications_base_table {
             return get_string('advnotifications_restore_label', 'block_advnotifications') . ' | ' .
                     get_string('advnotifications_delete_label', 'block_advnotifications');
         } else {
-            return '<form id="trrestore'.$values->id.'" data-restore="' . $values->id . '" method="POST" action="' .
+            return '<form id="trrestore' . $values->id . '" data-restore="' . $values->id . '" method="POST" action="' .
                     $CFG->wwwroot . '/blocks/advnotifications/pages/process.php">
                     <input type="hidden" class="restore_notification_sesskey" name="sesskey" value="' . sesskey() . '">
                     <input type="hidden" class="restore_notification_purpose" name="purpose" value="restore">
@@ -58,7 +58,7 @@ class advnotifications_restore_table extends advnotifications_base_table {
                     <button type="submit" class="restore_notification_restore icon fa fa-history fa-fw" name="restore"
                         title="' . get_string('advnotifications_restore_label', 'block_advnotifications') . '"></button>
                 </form>
-                <form id="trpermdelete'.$values->id.'" data-permdelete="' . $values->id . '" method="POST" action="' .
+                <form id="trpermdelete' . $values->id . '" data-permdelete="' . $values->id . '" method="POST" action="' .
                     $CFG->wwwroot . '/blocks/advnotifications/pages/process.php">
                     <input type="hidden" class="delete_notification_sesskey" name="sesskey" value="' . sesskey() . '">
                     <input type="hidden" class="delete_notification_purpose" name="purpose" value="permdelete">
