@@ -31,7 +31,7 @@ try {
 } catch (Exception $e) {
     header('HTTP/1.0 403 Forbidden');
     echo json_encode(["result" => "Failed",
-        "Notification" => get_string('advnotifications_err_forbidden', 'block_advnotifications')));
+        "Notification" => get_string('advnotifications_err_forbidden', 'block_advnotifications')]);
     exit();
 }
 
