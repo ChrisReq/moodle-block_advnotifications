@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 global $CFG;
 
 if ($ADMIN->fulltree) {
- // Used for navigation links to keep track of blockid (if any).
+    // Used for navigation links to keep track of blockid (if any).
     $blockid = optional_param('blockid', '', PARAM_INT);
     $param = '';
 
@@ -43,7 +43,7 @@ if ($ADMIN->fulltree) {
                                 href="' . $CFG->wwwroot . '/blocks/advnotifications/pages/restore.php' . $param . '">' .
                                 get_string('advnotifications_nav_restore', 'block_advnotifications') . '</a>';
 
- // SETTINGS' NAVIGATIONAL LINKS HEADING & LINKS.
+    // SETTINGS' NAVIGATIONAL LINKS HEADING & LINKS.
     $settings->add(
         new admin_setting_heading(
             'block_advnotifications/navigation', // NAME.
@@ -54,7 +54,7 @@ if ($ADMIN->fulltree) {
         )
     );
 
- // SETTINGS HEADING.
+    // SETTINGS HEADING.
     $settings->add(
         new admin_setting_heading(
             'block_advnotifications/settings', // NAME.
@@ -63,7 +63,7 @@ if ($ADMIN->fulltree) {
         )
     );
 
- // ENABLE TOGGLE.
+    // ENABLE TOGGLE.
     $settings->add(
         new admin_setting_configcheckbox(
             'block_advnotifications/enable', // NAME.
@@ -73,7 +73,7 @@ if ($ADMIN->fulltree) {
         )
     );
 
- // ALLOW HTML TOGGLE.
+    // ALLOW HTML TOGGLE.
     $settings->add(
         new admin_setting_configcheckbox(
             'block_advnotifications/html', // NAME.
@@ -83,7 +83,7 @@ if ($ADMIN->fulltree) {
         )
     );
 
- // MULTILANG FILTER(S) SUPPORT TOGGLE.
+    // MULTILANG FILTER(S) SUPPORT TOGGLE.
     $settings->add(
         new admin_setting_configcheckbox(
             'block_advnotifications/multilang', // NAME.
@@ -93,7 +93,7 @@ if ($ADMIN->fulltree) {
         )
     );
 
- // DATE FORMAT.
+    // DATE FORMAT.
     $options = \block_advnotifications\local\notification_manager::get_date_formats();
     $settings->add(
         new admin_setting_configselect(
@@ -105,7 +105,7 @@ if ($ADMIN->fulltree) {
         )
     );
 
- // AUTO-DELETE TOGGLE.
+    // AUTO-DELETE TOGGLE.
     $settings->add(
         new admin_setting_configcheckbox(
             'block_advnotifications/auto_delete', // NAME.
@@ -115,7 +115,7 @@ if ($ADMIN->fulltree) {
         )
     );
 
- // AUTO-PERMADELETE OLD DELETED NOTIFICATIONS.
+    // AUTO-PERMADELETE OLD DELETED NOTIFICATIONS.
     $settings->add(
         new admin_setting_configcheckbox(
             'block_advnotifications/auto_perma_delete', // NAME.
@@ -125,7 +125,7 @@ if ($ADMIN->fulltree) {
         )
     );
 
- // AUTO-DELETE USER DATA TOGGLE.
+    // AUTO-DELETE USER DATA TOGGLE.
     $settings->add(
         new admin_setting_configcheckbox(
             'block_advnotifications/auto_delete_user_data', // NAME.
