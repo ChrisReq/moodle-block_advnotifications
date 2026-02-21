@@ -92,16 +92,20 @@ class block_advnotifications extends block_base
         if (isset($bc)) {
             $context = context_system::instance();
             $bcontext = context_block::instance($bc->blockinstanceid);
-            if ($this->page->user_can_edit_blocks() &&
-                (has_capability('block/advnotifications:managenotifications', $context) ||
-                    has_capability('block/advnotifications:manageownnotifications', $bcontext))) {
+            if (
+                $this->page->user_can_edit_blocks() &&
+                (
+                    has_capability('block/advnotifications:managenotifications', $context) ||
+                    has_capability('block/advnotifications:manageownnotifications', $bcontext)
+                )
+            ) {
                 // Edit config icon - always show - needed for positioning UI.
                 $str = new lang_string('advnotifications_table_title', 'block_advnotifications');
                 $controls = new action_menu_link_secondary(
-                    new moodle_url('/blocks/advnotifications/pages/notifications.php', array('blockid' => $bc->blockinstanceid)),
-                    new pix_icon('a/view_list_active', $str, 'moodle', array('class' => 'iconsmall', 'title' => '')),
+                    new moodle_url('/blocks/advnotifications/pages/notifications.php', ['blockid' => $bc->blockinstanceid]),
+                    new pix_icon('a/view_list_active', $str, 'moodle', ['class' => 'iconsmall', 'title' => '']),
                     $str,
-                    array('class' => 'editing_manage')
+                    ['class' => 'editing_manage']
                 );
 
                 array_unshift($bc->controls, $controls);

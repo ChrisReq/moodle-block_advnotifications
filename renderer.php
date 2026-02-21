@@ -32,7 +32,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_advnotifications_renderer extends plugin_renderer_base {
-
     /**
      * Renders notification alerts on the page via the notification Mustache template.
      *

@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/lib/tablelib.php');
 require_once($CFG->dirroot . '/blocks/advnotifications/classes/notifications_table.php');
 
 // PARAMS.
-$params = array();
+$params = [];
 
 // Determines whether or not to download the table.
 $download = optional_param('download', '', PARAM_ALPHA);
@@ -112,11 +112,11 @@ $table->set_attribute('class', 'admin_table general_table notifications_table');
 $table->collapsible(false);
 
 $table->is_downloadable(true);
-$table->show_download_buttons_at(array(TABLE_P_BOTTOM));
+$table->show_download_buttons_at([TABLE_P_BOTTOM]);
 
 // Set SQL params for table.
 $sqlwhere = 'deleted = :deleted';
-$sqlparams = array('deleted' => 0);
+$sqlparams = ['deleted' => 0];
 if ($ownnotifs && !$allnotifs) {
     $sqlwhere .= ' AND created_by = :created_by';
     $sqlparams['created_by'] = $USER->id;

@@ -34,7 +34,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class notification_manager {
-
     /**
      * Determines which notifications to render and prepares their attributes.
      *
@@ -55,7 +54,7 @@ class notification_manager {
         $rendernotif = [];
 
         // CONDITIONS - add any future conditions here.
-        $conditions = array();
+        $conditions = [];
         // No deleted notifications.
         $conditions['deleted'] = 0;
         // No disabled notifications.
@@ -68,8 +67,9 @@ class notification_manager {
             // Keep track of number of times the user has seen the notification.
             // Check if a record of the user exists in the dismissed/seen table.
             // TODO: Move DB queries out of loop.
-            $userseen = $DB->get_record('block_advnotificationsdissed',
-                array('user_id' => $USER->id, 'not_id' => $notif->id)
+            $userseen = $DB->get_record(
+                'block_advnotificationsdissed',
+                ['user_id' => $USER->id, 'not_id' => $notif->id]
             );
 
             // Get notification settings to determine whether to render it or not.
@@ -114,8 +114,10 @@ class notification_manager {
                 $aicon = '';
 
                 // Allows for custom styling and serves as a basic filter if anything unwanted was somehow submitted.
-                if ($notif->type == "info" || $notif->type == "success" ||
-                        $notif->type == "warning" || $notif->type == "danger") {
+                if (
+                    $notif->type == "info" || $notif->type == "success" ||
+                    $notif->type == "warning" || $notif->type == "danger"
+                ) {
                     $aicon = $notif->type;
                 } else {
                     $notif->type = ($notif->type == "announcement") ? 'info announcement' : 'info';
@@ -135,15 +137,16 @@ class notification_manager {
                 }
 
                 // Construct notification - also format title/text to support multilang (filtered) strings.
-                $rendernotif[] = array(
-                    'extraclasses' => $extraclasses,                                            // Additional classes.
-                    'notifid' => $notif->id,                                                    // Notification id.
-                    'alerttype' => $notif->type,                                                // Alert type (styling).
-                    'aiconflag' => $notif->aicon,                                               // Render icon flag.
-                    'aicon' => $aicon,                                                          // Which icon to render.
-                    'title' => $filternotif ? format_text($notif->title, FORMAT_HTML) : $notif->title,       // Title.
+                $rendernotif[] = [
+                    'extraclasses' => $extraclasses, // Additional classes.
+                    'notifid' => $notif->id, // Notification id.
+                    'alerttype' => $notif->type, // Alert type (styling).
+                    'aiconflag' => $notif->aicon, // Render icon flag.
+                    'aicon' => $aicon, // Which icon to render.
+                    'title' => $filternotif ? format_text($notif->title, FORMAT_HTML) : $notif->title, // Title.
                     'message' => $filternotif ? format_text($notif->message, FORMAT_HTML) : $notif->message, // Notification text.
-                    'dismissible' => $notif->dismissible);                                      // Dismissible flag.
+                    'dismissible' => $notif->dismissible,
+                ];                                      // Dismissible flag.
             }
         }
 

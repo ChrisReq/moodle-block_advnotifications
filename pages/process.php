@@ -30,7 +30,7 @@ try {
     require_sesskey();
 } catch (Exception $e) {
     header('HTTP/1.0 403 Forbidden');
-    echo json_encode(array("result" => "Failed",
+    echo json_encode(["result" => "Failed",
         "Notification" => get_string('advnotifications_err_forbidden', 'block_advnotifications')));
     exit();
 }
@@ -109,15 +109,15 @@ $dateto == "" ? $dateto = 0 : $dateto = strtotime($dateto);
 
 if (isset($dismiss) && $dismiss != '') {
     $notification = $DB->get_record('block_advnotifications',
-        array('id' => $dismiss)
+        ['id' => $dismiss]
     );
     $userdissed = $DB->get_record('block_advnotificationsdissed',
-        array('user_id' => $USER->id, 'not_id' => $dismiss)
+        ['user_id' => $USER->id, 'not_id' => $dismiss]
     );
 
     // Update if the user has dismissed the notification.
     if ($userdissed) {
-        $DB->set_field('block_advnotificationsdissed', 'dismissed', 1, array('id' => $userdissed->id));
+        $DB->set_field('block_advnotificationsdissed', 'dismissed', 1, ['id' => $userdissed->id]);
     }
 
     if ($ajax) {
@@ -155,7 +155,7 @@ if (isset($blockinstance) && $blockinstance > -1) {
 // this is the new AJAX/JS deletion/editing method.
 if (isset($tableaction) && $tableaction != '') {
     if ($purpose == 'edit') {
-        $enotification = $DB->get_record('block_advnotifications', array('id' => $tableaction));
+        $enotification = $DB->get_record('block_advnotifications', ['id' => $tableaction]);
 
         $enotification->date_from = date('Y-m-d', $enotification->date_from);
         $enotification->date_to = date('Y-m-d', $enotification->date_to);
@@ -164,8 +164,10 @@ if (isset($tableaction) && $tableaction != '') {
             echo json_encode($enotification);
             exit();
         } else {
-            redirect(new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
-                get_string('advnotifications_err_nojsedit', 'block_advnotifications'));
+            redirect(
+                new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
+                get_string('advnotifications_err_nojsedit', 'block_advnotifications')
+            );
         }
     } else if ($purpose == 'delete') {
         $dnotification = new stdClass();
@@ -195,7 +197,7 @@ if (isset($tableaction) && $tableaction != '') {
         $event->trigger();
 
         if ($ajax) {
-            echo json_encode(array("done" => $tableaction));
+            echo json_encode(["done" => $tableaction]);
             exit();
         } else {
             redirect(new moodle_url('/blocks/advnotifications/pages/notifications.php', $params));
@@ -210,16 +212,16 @@ if (isset($tableaction) && $tableaction != '') {
         $DB->update_record('block_advnotifications', $rnotification);
 
         if ($ajax) {
-            echo json_encode(array("done" => $tableaction));
+            echo json_encode(["done" => $tableaction]);
             exit();
         } else {
             redirect(new moodle_url('/blocks/advnotifications/pages/restore.php', $params));
         }
     } else if ($purpose == 'permdelete') {
-        $DB->delete_records('block_advnotifications', array('id' => $tableaction));
+        $DB->delete_records('block_advnotifications', ['id' => $tableaction]);
 
         if ($ajax) {
-            echo json_encode(array('done' => $tableaction));
+            echo json_encode(['done' => $tableaction]);
             exit();
         } else {
             redirect(new moodle_url('/blocks/advnotifications/pages/restore.php', $params));
@@ -279,15 +281,15 @@ if ($purpose == 'update') {
         'context' => context_block::instance($blockinstance),
         'objectid' => $urow->id,
         'other' => [
-           'old_title' => $old->title,
-           'old_message' => $old->message,
-           'old_date_from' => $old->date_from,
-           'old_date_to' => $old->date_to,
-           'new_title' => $urow->title,
-           'new_message' => $urow->message,
-           'new_date_from' => $urow->date_from,
-           'new_date_to' => $urow->date_to
-        ]
+            'old_title' => $old->title,
+            'old_message' => $old->message,
+            'old_date_from' => $old->date_from,
+            'old_date_to' => $old->date_to,
+            'new_title' => $urow->title,
+            'new_message' => $urow->message,
+            'new_date_from' => $urow->date_from,
+            'new_date_to' => $urow->date_to,
+        ],
     ];
     $event = \block_advnotifications\event\notification_updated::create($params);
     $event->trigger();
@@ -296,8 +298,10 @@ if ($purpose == 'update') {
         echo json_encode(array("updated" => $title));
         exit();
     } else {
-        redirect(new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
-            get_string('advnotifications_err_nojsedit', 'block_advnotifications'));
+        redirect(
+            new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
+            get_string('advnotifications_err_nojsedit', 'block_advnotifications')
+        );
     }
 }
 
@@ -326,7 +330,7 @@ if ($purpose == "add") {
             // but leaving it in case validation slipped past JS.
             header('HTTP/1.1 400 Bad Request Invalid Input');
             header('Content-Type: application/json; charset=UTF-8');
-            echo json_encode(array('error' => $fields));
+            echo json_encode(['error' => $fields]);
             exit();
         } else {
             // Redirect with Error.
