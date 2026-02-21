@@ -2,4 +2,7 @@ filter:
   notPaths:
     - node_modules
     - node_modules/**
+    - '**/node_modules'
     - '**/node_modules/**'
+    - 'blocks/advnotifications/node_modules'
+    - 'blocks/advnotifications/node_modules/**'
