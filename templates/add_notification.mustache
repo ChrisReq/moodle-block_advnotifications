@@ -35,7 +35,7 @@
     <div class="add_notification_form_wrapper">
         <form id="add_notification_form" action="{{form_action}}" method="POST">
             <div class="form-check">
-                <input type="checkbox" id="add_notification_enabled" class="form-check-input" name="enabled"/>
+                <input type="checkbox" id="add_notification_enabled" class="form-check-input" name="enabled">
                 <label for="add_notification_enabled" class="form-check-label">
                     {{#str}}advnotifications_enabled, block_advnotifications{{/str}}
                 </label>
@@ -43,7 +43,7 @@
 
             {{#show_global_toggle}}
             <div class="form-check">
-                <input type="checkbox" id="add_notification_global" class="form-check-input" name="global"/>
+                <input type="checkbox" id="add_notification_global" class="form-check-input" name="global">
                 <label for="add_notification_global" class="form-check-label">
                     {{#str}}advnotifications_global, block_advnotifications{{/str}}
                 </label>
@@ -55,27 +55,27 @@
                 <strong>
                     <em>{{#str}}add_notification_global_notice, block_advnotifications{{/str}}</em>
                 </strong>
-                <input type="hidden" id="add_notification_global" name="global" value="1"/>
+                <input type="hidden" id="add_notification_global" name="global" value="1">
             </div>
             {{/forced_global}}
 
             {{#forced_local}}
             <div class="form-group">
                 <strong>{{#str}}add_notif_local_notice, block_advnotifications{{/str}}</strong>
-                <input type="hidden" id="add_notification_global" name="global" value="0"/>
+                <input type="hidden" id="add_notification_global" name="global" value="0">
             </div>
             {{/forced_local}}
 
             <div class="form-group row">
                 <input type="text" id="add_notification_title" class="form-control" name="title"
-                    placeholder="{{#str}}advnotifications_title, block_advnotifications{{/str}}"/>
+                    placeholder="{{#str}}advnotifications_title, block_advnotifications{{/str}}">
                 <textarea id="add_notification_message" class="form-control" name="message"
                     placeholder="{{#str}}advnotifications_message, block_advnotifications{{/str}}"></textarea>
             </div>
 
             <div class="form-group row">
                 <select id="add_notification_type" class="form-control col-7" name="type" required>
-                    <option selected disabled>
+                    <option value="" selected disabled>
                         {{#str}}advnotifications_type, block_advnotifications{{/str}}
                     </option>
                     <option value="info">
@@ -101,7 +101,7 @@
 
             <div class="form-group row">
                 <select id="add_notification_times" class="form-control col-7" name="times" required>
-                    <option selected disabled>
+                    <option value="" selected disabled>
                         {{#str}}advnotifications_times, block_advnotifications{{/str}}
                     </option>
                     {{#timeoptions}}
@@ -118,13 +118,13 @@
 
             <div class="form-group">
                 <div class="form-check">
-                    <input type="checkbox" id="add_notification_aicon" class="form-check-input" name="aicon"/>
+                    <input type="checkbox" id="add_notification_aicon" class="form-check-input" name="aicon">
                     <label for="add_notification_aicon" class="form-check-label">
                         {{#str}}advnotifications_aicon, block_advnotifications{{/str}}
                     </label>
                 </div>
                 <div class="form-check">
-                    <input type="checkbox" id="add_notification_dismissible" class="form-check-input" name="dismissible"/>
+                    <input type="checkbox" id="add_notification_dismissible" class="form-check-input" name="dismissible">
                     <label for="add_notification_dismissible" class="form-check-label">
                         {{#str}}advnotifications_dismissible, block_advnotifications{{/str}}
                     </label>
@@ -136,25 +136,25 @@
                     {{#str}}advnotifications_date_from, block_advnotifications{{/str}}
                 </label>
                 <input type="date" id="add_notification_date_from" class="form-control"
-                    name="date_from" placeholder="yyyy-mm-dd"/>
+                    name="date_from">
                 <label for="add_notification_date_to" class="form-text">
                     {{#str}}advnotifications_date_to, block_advnotifications{{/str}}
                 </label>
                 <input type="date" id="add_notification_date_to" class="form-control"
-                    name="date_to" placeholder="yyyy-mm-dd"/>
+                    name="date_to">
                 <small class="form-text text-muted">
                     {{#str}}advnotifications_date_info, block_advnotifications{{/str}}
                 </small>
             </div>
 
-            <input type="hidden" id="add_notification_sesskey" name="sesskey" value="{{sesskey}}"/>
-            <input type="hidden" id="add_notification_purpose" name="purpose" value="add"/>
-            <input type="hidden" id="add_notification_blockid" name="blockid" value="{{blockid}}"/>
+            <input type="hidden" id="add_notification_sesskey" name="sesskey" value="{{sesskey}}">
+            <input type="hidden" id="add_notification_purpose" name="purpose" value="add">
+            <input type="hidden" id="add_notification_blockid" name="blockid" value="{{blockid}}">
 
             <div class="form-group">
-                <input type="submit" id="add_notification_save" class="btn btn-primary" role="button"
+                <input type="submit" id="add_notification_save" class="btn btn-primary"
                     name="save"
-                    value="{{#str}}advnotifications_save, block_advnotifications{{/str}}"/>
+                    value="{{#str}}advnotifications_save, block_advnotifications{{/str}}">
                 <a href="{{cancel_url}}" id="add_notification_cancel" class="btn btn-danger">
                     {{#str}}advnotifications_cancel, block_advnotifications{{/str}}
                 </a>

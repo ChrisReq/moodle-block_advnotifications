@@ -232,7 +232,7 @@ class provider implements
 
             // Using user context for better export presentation.
             writer::with_context(\context_user::instance($userid))->export_data([
-                get_string('pluginname', 'block_advnotifications')
+                get_string('pluginname', 'block_advnotifications'),
             ], $data);
         }
         if (isset($sitedata) && !empty($sitedata)) {
@@ -240,7 +240,7 @@ class provider implements
                 'advnotifications' => $sitedata,
             ];
             writer::with_context(\context_system::instance())->export_data([
-                get_string('pluginname', 'block_advnotifications')
+                get_string('pluginname', 'block_advnotifications'),
             ], $data);
         }
     }
@@ -264,7 +264,8 @@ class provider implements
                 'block_advnotifications',
                 ['blockid' => SITE_NOTIFICATION],
                 null,
-                'id');
+                'id'
+            );
 
             foreach ($delrecords as $delrecord) {
                 static::adv_delete_record_data($delrecord->id);
@@ -276,7 +277,8 @@ class provider implements
                 'block_advnotifications',
                 ['blockid' => $context->instanceid],
                 null,
-                'id');
+                'id'
+            );
 
             foreach ($delrecords as $delrecord) {
                 static::adv_delete_record_data($delrecord->id);

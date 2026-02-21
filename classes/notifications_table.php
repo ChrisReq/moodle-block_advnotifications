@@ -52,7 +52,7 @@ class advnotifications_notifications_table extends advnotifications_base_table {
             return get_string('advnotifications_edit_label', 'block_advnotifications') . ' | ' .
                     get_string('advnotifications_delete_label', 'block_advnotifications');
         } else {
-            return '<form id="tredit'.$values->id.'" data-edit="' . $values->id . '" method="POST" action="' . $CFG->wwwroot .
+            return '<form id="tredit' . $values->id . '" data-edit="' . $values->id . '" method="POST" action="' . $CFG->wwwroot .
                 '/blocks/advnotifications/pages/process.php">
                     <input type="hidden" class="edit_notification_sesskey" name="sesskey" value="' . sesskey() . '">
                     <input type="hidden" class="edit_notification_purpose" name="purpose" value="edit">
@@ -61,7 +61,7 @@ class advnotifications_notifications_table extends advnotifications_base_table {
                     <button type="submit" class="edit_notification_edit icon fa fa-pencil-square-o fa-fw" name="edit"
                         title="' . get_string('advnotifications_edit_label', 'block_advnotifications') . '"></button>
                 </form>
-                <form id="trdelete'.$values->id.'" data-delete="' . $values->id . '" method="POST" action="' . $CFG->wwwroot .
+                <form id="trdelete' . $values->id . '" data-delete="' . $values->id . '" method="POST" action="' . $CFG->wwwroot .
                 '/blocks/advnotifications/pages/process.php">
                     <input type="hidden" class="delete_notification_sesskey" name="sesskey" value="' . sesskey() . '">
                     <input type="hidden" class="delete_notification_purpose" name="purpose" value="delete">
