@@ -37,7 +37,6 @@ require_once(dirname(__FILE__) . '/base_table.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class advnotifications_notifications_table extends advnotifications_base_table {
-
     /**
      * This function is called for each data row to allow processing of the
      * actions value.

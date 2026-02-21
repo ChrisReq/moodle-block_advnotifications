@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/lib/tablelib.php');
 require_once($CFG->dirroot . '/blocks/advnotifications/classes/notifications_table.php');
 
 // PARAMS.
-$params = array();
+$params = [];
 
 // Determines whether or not to download the table.
 $download = optional_param('download', '', PARAM_ALPHA);
@@ -91,7 +91,6 @@ if (!$table->is_downloading()) {
     // Print the page header.
     $PAGE->set_title(get_string('advnotifications_table_title', 'block_advnotifications'));
     $PAGE->set_heading(get_string('advnotifications_table_heading', 'block_advnotifications'));
-    $PAGE->requires->jquery();
     $PAGE->requires->js_call_amd('block_advnotifications/custom', 'initialise');
     if (isset($bcontext) && $ccontext = $bcontext->get_course_context(false)) {
         $course = $DB->get_field('course', 'fullname', ['id' => $ccontext->instanceid]);
@@ -113,11 +112,11 @@ $table->set_attribute('class', 'admin_table general_table notifications_table');
 $table->collapsible(false);
 
 $table->is_downloadable(true);
-$table->show_download_buttons_at(array(TABLE_P_BOTTOM));
+$table->show_download_buttons_at([TABLE_P_BOTTOM]);
 
 // Set SQL params for table.
 $sqlwhere = 'deleted = :deleted';
-$sqlparams = array('deleted' => 0);
+$sqlparams = ['deleted' => 0];
 if ($ownnotifs && !$allnotifs) {
     $sqlwhere .= ' AND created_by = :created_by';
     $sqlparams['created_by'] = $USER->id;

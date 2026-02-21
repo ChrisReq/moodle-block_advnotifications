@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/lib/tablelib.php');
 require_once($CFG->dirroot . '/blocks/advnotifications/classes/restore_table.php');
 
 // PARAMS.
-$params = array();
+$params = [];
 
 // Determines which notification the user wishes to restore.
 $restore = optional_param('restore', null, PARAM_INT);
@@ -53,13 +53,13 @@ if (isset($blockid) && $blockid !== '') {
     $xparam = '&blockid=' . $blockid;
 }
 
-if ( !!$download ) {
+if (!!$download) {
     $params['download'] = 1;
 }
 
-if ( !!$delete ) {
+if (!!$delete) {
     // If wanting to delete a notification, delete from DB immediately before the table is rendered.
-    $DB->delete_records('block_advnotifications', array('id' => $delete));
+    $DB->delete_records('block_advnotifications', ['id' => $delete]);
 }
 
 // Force the user to login/create an account to access this page.
@@ -95,7 +95,6 @@ if (!$table->is_downloading()) {
     // Print the page header.
     $PAGE->set_title(get_string('advnotifications_restore_table_title', 'block_advnotifications'));
     $PAGE->set_heading(get_string('advnotifications_restore_table_heading', 'block_advnotifications'));
-    $PAGE->requires->jquery();
     $PAGE->requires->js_call_amd('block_advnotifications/custom', 'initialise');
     $PAGE->navbar->add(get_string('blocks'));
     $PAGE->navbar->add(get_string('pluginname', 'block_advnotifications'));
@@ -113,11 +112,11 @@ $table->set_attribute('class', 'admin_table general_table notifications_restore_
 $table->collapsible(false);
 
 $table->is_downloadable(true);
-$table->show_download_buttons_at(array(TABLE_P_BOTTOM));
+$table->show_download_buttons_at([TABLE_P_BOTTOM]);
 
 // Set SQL params for table.
 $sqlwhere = 'deleted = :deleted';
-$sqlparams = array('deleted' => 1);
+$sqlparams = ['deleted' => 1];
 if ($ownnotifs && !$allnotifs) {
     $sqlwhere .= ' AND created_by = :created_by';
     $sqlparams['created_by'] = $USER->id;

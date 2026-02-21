@@ -27,7 +27,7 @@ namespace block_advnotifications\privacy;
 use context_block;
 use context_system;
 use core_privacy\local\metadata\collection;
-use \core_privacy\local\metadata\provider as metadata_provider;
+use core_privacy\local\metadata\provider as metadata_provider;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
@@ -49,22 +49,19 @@ const SITE_NOTIFICATION = "-1";
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-        // This plugin stores personal user data.
-        metadata_provider,
-
-        // Data is provided directly to core.
-        plugin_provider,
-
-        // This plugin is can determine which users' data it's captured.
-        core_userlist_provider {
-
+    // This plugin is can determine which users' data it's captured.
+    core_userlist_provider,
+    // This plugin stores personal user data.
+    metadata_provider,
+    // Data is provided directly to core.
+    plugin_provider {
     /**
      * Get metadata about a user used by the plugin.
      *
      * @param   collection $collection The collection of metadata.
      * @return  collection  $collection The collection returned as a whole.
      */
-    public static function get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection): collection {
         // Add items to collection.
         $collection->add_database_table(
             'block_advnotifications',
@@ -74,7 +71,7 @@ class provider implements
                 'blockid' => 'privacy:metadata:block_advnotifications:blockid',
                 'deleted' => 'privacy:metadata:block_advnotifications:deleted',
                 'deleted_by' => 'privacy:metadata:block_advnotifications:deleted_by',
-                'created_by' => 'privacy:metadata:block_advnotifications:created_by'
+                'created_by' => 'privacy:metadata:block_advnotifications:created_by',
             ],
             'privacy:metadata:block_advnotifications'
         );
@@ -85,7 +82,7 @@ class provider implements
                 'user_id' => 'privacy:metadata:block_advnotificationsdissed:user_id',
                 'not_id' => 'privacy:metadata:block_advnotificationsdissed:not_id',
                 'dismissed' => 'privacy:metadata:block_advnotificationsdissed:dismissed',
-                'seen' => 'privacy:metadata:block_advnotificationsdissed:seen'
+                'seen' => 'privacy:metadata:block_advnotificationsdissed:seen',
             ],
             'privacy:metadata:block_advnotificationsdissed'
         );
@@ -99,7 +96,7 @@ class provider implements
      * @param int $userid User ID to find contexts for.
      * @return contextlist  $contextlist    List of contexts used by the plugin.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid): contextlist {
         // User data only on system/block context.
         global $DB;
         $contextlist = new \core_privacy\local\request\contextlist();
@@ -111,7 +108,7 @@ class provider implements
                JOIN {block_advnotifications} adv ON adv.blockid = c.instanceid
                JOIN {block_advnotificationsdissed} advdis ON advdis.user_id = :userid
               WHERE c.contextlevel = :contextblock",
-            array('userid' => $userid, 'contextblock' => CONTEXT_BLOCK)
+            ['userid' => $userid, 'contextblock' => CONTEXT_BLOCK]
         );
 
         // TODO: Check if needed...
@@ -121,12 +118,11 @@ class provider implements
                FROM {block_advnotifications} adv
                JOIN {block_advnotificationsdissed} advdis ON advdis.not_id = adv.id
               WHERE advdis.user_id = :userid",
-            array('userid' => $userid)
+            ['userid' => $userid]
         );
 
         // Check if block ID is not empy/null.
         if (isset($blockids) && !empty($blockids)) {
-
             // If notification set to display globally, system context is added.
             if (array_key_exists(SITE_NOTIFICATION, $blockids)) {
                 $contextlist->add_system_context();
@@ -152,22 +148,24 @@ class provider implements
         // Different sql for system/block contexts.
         if ($context->contextlevel == CONTEXT_SYSTEM) {
             // Get and add user IDs in system context.
-            $userlist->add_from_sql('user_id',
+            $userlist->add_from_sql(
+                'user_id',
                 "SELECT advdis.user_id
                    FROM {block_advnotificationsdissed} advdis
                    JOIN {block_advnotifications} adv ON adv.id = advdis.not_id
                   WHERE adv.blockid = :blockid",
-                array('blockid' => SITE_NOTIFICATION)
+                ['blockid' => SITE_NOTIFICATION]
             );
         } else if ($context->contextlevel == CONTEXT_BLOCK) {
             // Get and add user IDs in block context.
-            $userlist->add_from_sql('user_id',
+            $userlist->add_from_sql(
+                'user_id',
                 "SELECT advdis.user_id
                    FROM {block_advnotificationsdissed} advdis
                    JOIN {block_advnotifications} adv ON adv.id = advdis.not_id
                    JOIN {context} c ON c.instanceid = adv.blockid
                   WHERE c.contextlevel = :contextlevel",
-                array('contextlevel' => CONTEXT_BLOCK)
+                ['contextlevel' => CONTEXT_BLOCK]
             );
         }
     }
@@ -194,7 +192,7 @@ class provider implements
                FROM {block_advnotifications} adv
                JOIN {block_advnotificationsdissed} advdis ON advdis.not_id = adv.id
               WHERE advdis.user_id = :userid",
-            array('userid' => $userid)
+            ['userid' => $userid]
         );
 
         // Get and export user data.
@@ -209,7 +207,7 @@ class provider implements
                     'created_by' => $userdata->created_by,
                     'user_id' => $userdata->user_id,
                     'dismissed' => transform::yesno($userdata->dismissed),
-                    'seen' => $userdata->seen
+                    'seen' => $userdata->seen,
                 ];
             } else if ($userdata->blockid === SITE_NOTIFICATION) {
                 $sitedata[] = (object)[
@@ -221,7 +219,7 @@ class provider implements
                     'created_by' => $userdata->created_by,
                     'user_id' => $userdata->user_id,
                     'dismissed' => transform::yesno($userdata->dismissed),
-                    'seen' => $userdata->seen
+                    'seen' => $userdata->seen,
                 ];
             }
         }
@@ -262,8 +260,9 @@ class provider implements
 
         // Handle system context first.
         if ($context->contextlevel == CONTEXT_SYSTEM) {
-            $delrecords = $DB->get_records('block_advnotifications',
-                array('blockid' => SITE_NOTIFICATION),
+            $delrecords = $DB->get_records(
+                'block_advnotifications',
+                ['blockid' => SITE_NOTIFICATION],
                 null,
                 'id');
 
@@ -273,8 +272,9 @@ class provider implements
         } else if ($context->contextlevel == CONTEXT_BLOCK) { // Handle block context next.
             // Get id of notification data to delete based on provided context instance id.
             // And block instance id is saved in DB already, so just check against that.
-            $delrecords = $DB->get_records('block_advnotifications',
-                array('blockid' => $context->instanceid),
+            $delrecords = $DB->get_records(
+                'block_advnotifications',
+                ['blockid' => $context->instanceid],
                 null,
                 'id');
 
@@ -319,13 +319,13 @@ class provider implements
         global $DB;
 
         // If user created notification.
-        $DB->set_field('block_advnotifications', 'created_by', -1, array('created_by' => $userid));
+        $DB->set_field('block_advnotifications', 'created_by', -1, ['created_by' => $userid]);
 
         // If user deleted notification.
-        $DB->set_field('block_advnotifications', 'deleted_by', -1, array('deleted_by' => $userid));
+        $DB->set_field('block_advnotifications', 'deleted_by', -1, ['deleted_by' => $userid]);
 
         // If user viewed/dismsissed notification.
-        $DB->delete_records('block_advnotificationsdissed', array('user_id' => $userid));
+        $DB->delete_records('block_advnotificationsdissed', ['user_id' => $userid]);
     }
 
     /**
@@ -338,13 +338,12 @@ class provider implements
         // We won't delete notification due to user data being deleted - just 'clear' user id.
 
         // If user created notification.
-        $DB->set_field('block_advnotifications', 'created_by', -1, array('id' => $recordid));
+        $DB->set_field('block_advnotifications', 'created_by', -1, ['id' => $recordid]);
 
         // If user deleted notification.
-        $DB->set_field('block_advnotifications', 'deleted_by', -1, array('id' => $recordid));
+        $DB->set_field('block_advnotifications', 'deleted_by', -1, ['id' => $recordid]);
 
         // If user viewed/dismsissed notification.
-        $DB->delete_records('block_advnotificationsdissed', array('not_id' => $recordid));
+        $DB->delete_records('block_advnotificationsdissed', ['not_id' => $recordid]);
     }
 }
-

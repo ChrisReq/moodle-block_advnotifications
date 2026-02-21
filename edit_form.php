@@ -32,7 +32,6 @@ defined('MOODLE_INTERNAL') || die;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_advnotifications_edit_form extends block_edit_form {
-
     /**
      * Build form.
      *
@@ -58,7 +57,8 @@ class block_advnotifications_edit_form extends block_edit_form {
 
         // Only render links to users that are allowed to manage notifications.
         if (has_capability('block/advnotifications:managenotifications', $context)) {
-            $mform->addElement('html',
+            $mform->addElement(
+                'html',
                 '<div id="advnotifications_manage" class="manage_notifications">
                                 <h3>' .
                 get_string('advnotifications_nav_heading', 'block_advnotifications') .

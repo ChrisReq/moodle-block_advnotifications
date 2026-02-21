@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 // Load tablelib lib.
-require_once($CFG->dirroot .'/lib/tablelib.php');
+require_once($CFG->dirroot . '/lib/tablelib.php');
 
 // The word 'notifications' is used twice, as I'm using the 'pluginname_filename' convention.
 
@@ -37,7 +37,6 @@ require_once($CFG->dirroot .'/lib/tablelib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class advnotifications_base_table extends table_sql {
-
     // Lang strings that get re-used below is stored in variables to improve efficiency (Don't have to get strings many times).
     /**
      * @var null|string
@@ -56,7 +55,7 @@ class advnotifications_base_table extends table_sql {
     public function __construct($uniqueid) {
         parent::__construct($uniqueid);
         // Define the list of columns to show.
-        $columns = array(
+        $columns = [
             'id',
             'title',
             'type',
@@ -67,24 +66,24 @@ class advnotifications_base_table extends table_sql {
             'times',
             'date_from',
             'date_to',
-            'actions'
-        );
+            'actions',
+        ];
         $this->define_columns($columns);
 
         // Define the titles of columns to show in header from lang file.               // Examples.
-        $headers = array(
-            get_string('advnotifications_field_id', 'block_advnotifications'),          // Id: 1.
-            get_string('advnotifications_field_title', 'block_advnotifications'),       // Title: Site Maintenance.
-            get_string('advnotifications_field_type', 'block_advnotifications'),        // Type: info.
-            get_string('advnotifications_field_enabled', 'block_advnotifications'),     // Enabled: Yes.
-            get_string('advnotifications_field_global', 'block_advnotifications'),      // Global: Yes.
-            get_string('advnotifications_field_aicon', 'block_advnotifications'),       // AIcon: Yes.
+        $headers = [
+            get_string('advnotifications_field_id', 'block_advnotifications'), // Id: 1.
+            get_string('advnotifications_field_title', 'block_advnotifications'), // Title: Site Maintenance.
+            get_string('advnotifications_field_type', 'block_advnotifications'), // Type: info.
+            get_string('advnotifications_field_enabled', 'block_advnotifications'), // Enabled: Yes.
+            get_string('advnotifications_field_global', 'block_advnotifications'), // Global: Yes.
+            get_string('advnotifications_field_aicon', 'block_advnotifications'), // AIcon: Yes.
             get_string('advnotifications_field_dismissible', 'block_advnotifications'), // Dismissible: Yes.
-            get_string('advnotifications_field_times', 'block_advnotifications'),       // Times: 10.
-            get_string('advnotifications_field_date_from', 'block_advnotifications'),   // Date From: dd/mm/yyyy.
-            get_string('advnotifications_field_date_to', 'block_advnotifications'),     // Date To: dd/mm/yyyy.
-            get_string('advnotifications_field_actions', 'block_advnotifications'),     // Actions: Edit | Delete.
-        );
+            get_string('advnotifications_field_times', 'block_advnotifications'), // Times: 10.
+            get_string('advnotifications_field_date_from', 'block_advnotifications'), // Date From: dd/mm/yyyy.
+            get_string('advnotifications_field_date_to', 'block_advnotifications'), // Date To: dd/mm/yyyy.
+            get_string('advnotifications_field_actions', 'block_advnotifications'), // Actions: Edit | Delete.
+        ];
         $this->define_headers($headers);
 
         $this->sortable(true, 'id', SORT_DESC);

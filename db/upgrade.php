@@ -59,7 +59,7 @@ function xmldb_block_advnotifications_upgrade($oldversion) {
         $table->add_field('created_by', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '-1');
 
         // Adding keys to table block_advnotifications.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for block_advnotifications.
         if (!$dbman->table_exists($table)) {
@@ -77,7 +77,7 @@ function xmldb_block_advnotifications_upgrade($oldversion) {
         $table->add_field('seen', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
 
         // Adding keys to table block_advnotificationsdissed.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for block_advnotificationsdissed.
         if (!$dbman->table_exists($table)) {
@@ -90,7 +90,6 @@ function xmldb_block_advnotifications_upgrade($oldversion) {
 
     // If upgrading from version earlier than v1.4.1 - max for 'seen' needs to be increased.
     if ($oldversion < 2021010616) {
-
         // Increase length/precision of field 'seen' in table 'block_advnotificationsdissed' to '10'.
         $table = new xmldb_table('block_advnotificationsdissed');
         $field = new xmldb_field('seen', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
@@ -102,7 +101,17 @@ function xmldb_block_advnotifications_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021010616, 'advnotifications');
     }
 
-    // Add future upgrade points here.
+    // v2.0.0 – Confirm seen field is INT(10) on all installations.
+    // Ensures no PostgreSQL instance still has a SMALLINT (max 32,767) for the seen
+    // column; change_field_precision is idempotent so it is safe to call again.
+    if ($oldversion < 2026022000) {
+        $table = new xmldb_table('block_advnotificationsdissed');
+        $field = new xmldb_field('seen', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        $dbman->change_field_precision($table, $field);
+
+        upgrade_block_savepoint(true, 2026022000, 'advnotifications');
+    }
 
     return true;
 }

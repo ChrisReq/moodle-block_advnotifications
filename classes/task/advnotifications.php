@@ -56,9 +56,10 @@ class advnotifications extends \core\task\scheduled_task {
             // TODO - echo "\n\t\t- " . get_string('advnotifications_cron_auto_perma_delete', 'block_advnotifications') . "\n";.
 
             // Permanently delete notifications that's had the deleted flag for more than 30 days.
-            $DB->delete_records_select('block_advnotifications',
+            $DB->delete_records_select(
+                'block_advnotifications',
                 'deleted_at < :limit AND deleted_at <> 0 AND deleted = 1',
-                array('limit' => strtotime('-30 days'))
+                ['limit' => strtotime('-30 days')]
             );
         }
 
@@ -67,15 +68,17 @@ class advnotifications extends \core\task\scheduled_task {
             // TODO - echo "\t\t- " . get_string('advnotifications_cron_auto_delete', 'block_advnotifications') . "\n";.
 
             // Add deleted flag to notifications that's passed their end-date.
-            $DB->set_field_select('block_advnotifications',
+            $DB->set_field_select(
+                'block_advnotifications',
                 'deleted',
                 '1',
                 'date_to < :now AND date_from <> date_to',
-                array('now' => time())
+                ['now' => time()]
             );
 
             // Record time of setting 'deleted' flag.
-            $DB->set_field_select('block_advnotifications',
+            $DB->set_field_select(
+                'block_advnotifications',
                 'deleted_at',
                 time(),
                 'deleted = 1'
@@ -92,12 +95,11 @@ class advnotifications extends \core\task\scheduled_task {
                                            LEFT JOIN {block_advnotifications} ban ON band.not_id = ban.id
                                                WHERE ban.id IS NULL');
 
-            $DB->delete_records_list('block_advnotificationsdissed',
+            $DB->delete_records_list(
+                'block_advnotificationsdissed',
                 'id',
                 array_keys((array)$todelete)
             );
         }
     }
 }
-
-
