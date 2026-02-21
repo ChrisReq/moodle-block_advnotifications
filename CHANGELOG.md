@@ -1,5 +1,28 @@
 # Changelog
 
+## v2.0.0 - 20/02/2026
+
+### Added
+* Moodle 4.4 – 5.0 compatibility (minimum requirement: Moodle 4.4.2).
+* `notification_manager` class (`classes/local/notification_manager.php`) encapsulates core notification logic previously spread across `locallib.php`.
+* Moodle event logging: `notification_created`, `notification_updated`, `notification_deleted` events provide a full audit trail.
+* Scheduled maintenance task (`classes/task/advnotifications.php`) registered via `db/tasks.php` — runs daily at midnight to auto-delete expired notifications and clean up stale user records.
+* GitHub Actions CI workflow replacing Travis CI.
+
+### Changed
+* Refactored notification preparation into `notification_manager::prep_notifications()` for improved maintainability.
+* `locallib.php` is now a backward-compatibility wrapper around `notification_manager` — deprecated for direct use.
+* CI pipeline updated: switched from `node-sass` to `dart-sass` for Node.js 22 compatibility.
+* Code style and Mustache lint fixes throughout the codebase.
+* Bumped version number.
+
+### Fixed
+* PHPCS / moodle-plugin-ci code-checker violations resolved.
+* Mustache template linting issues corrected.
+* CI database service configuration for GitHub Actions.
+
+---
+
 ## v1.4.2 - 10/02/2021
 
 ### Changed
