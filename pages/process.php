@@ -29,7 +29,8 @@ require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 try {
     require_sesskey();
 } catch (Exception $e) {
-    header('HTTP/1.0 403 Forbidden');
+    http_response_code(403);
+    header('Content-Type: application/json; charset=UTF-8');
     echo json_encode(["result" => "Failed",
         "Notification" => get_string('advnotifications_err_forbidden', 'block_advnotifications')]);
     exit();
@@ -38,8 +39,6 @@ try {
 require_login();
 
 global $USER;
-
-header('HTTP/1.0 200 OK');
 
 // TODO - Check if insertions/updates/deletions were successful, and return appropriate message.
 
@@ -102,10 +101,19 @@ if ($dismissible == 'on' || $dismissible == '1') {
     $dismissible = 0;
 }
 
-// TODO: Check if successful?
-// Convert dates to epoch for DB. If empty, set to 0 (forever) by default.
-$datefrom == "" ? $datefrom = 0 : $datefrom = strtotime($datefrom);
-$dateto == "" ? $dateto = 0 : $dateto = strtotime($dateto);
+// Convert dates to epoch for DB. If empty or unparseable, set to 0 (forever) by default.
+if ($datefrom === null || $datefrom === '') {
+    $datefrom = 0;
+} else {
+    $parsed = strtotime($datefrom);
+    $datefrom = ($parsed === false) ? 0 : $parsed;
+}
+if ($dateto === null || $dateto === '') {
+    $dateto = 0;
+} else {
+    $parsed = strtotime($dateto);
+    $dateto = ($parsed === false) ? 0 : $parsed;
+}
 
 if (isset($dismiss) && $dismiss != '') {
     $notification = $DB->get_record(
@@ -138,8 +146,12 @@ $ownnotifs = false;
 // The 'strings' purpose/action is just getting strings.
 if (isset($purpose) && $purpose !== 'strings') {
     if (!$allnotifs) {
-        $bcontext = context_block::instance($blockinstance);
-        $ownnotifs = has_capability('block/advnotifications:manageownnotifications', $bcontext);
+        if ($blockinstance > 0) {
+            $bcontext = context_block::instance($blockinstance, IGNORE_MISSING);
+            if ($bcontext) {
+                $ownnotifs = has_capability('block/advnotifications:manageownnotifications', $bcontext);
+            }
+        }
     }
 
     if (!$allnotifs && !$ownnotifs) {
@@ -147,27 +159,59 @@ if (isset($purpose) && $purpose !== 'strings') {
     }
 }
 
-// Build redirect url params.
-$params = [];
+// Build redirect url params (keep separate from event params so we never leak objects into URLs).
+$redirectparams = [];
 if (isset($blockinstance) && $blockinstance > -1) {
-    $params['blockid'] = $blockinstance;
+    $redirectparams['blockid'] = $blockinstance;
 }
+
+/**
+ * Helper to verify the current user is allowed to act on the given notification record.
+ * A user with site-wide managenotifications can act on anything. Otherwise they must have
+ * manageownnotifications on the notification's owning block context AND have created it.
+ */
+$canactonnotification = function($notif) use ($USER, $allnotifs) {
+    if (!$notif) {
+        return false;
+    }
+    if ($allnotifs) {
+        return true;
+    }
+    if ((int)$notif->blockid <= 0) {
+        // Global / site notifications can only be touched by site-wide managers.
+        return false;
+    }
+    $nbcontext = context_block::instance($notif->blockid, IGNORE_MISSING);
+    if (!$nbcontext) {
+        return false;
+    }
+    if (!has_capability('block/advnotifications:manageownnotifications', $nbcontext)) {
+        return false;
+    }
+    return ((int)$notif->created_by === (int)$USER->id);
+};
 
 // Handle Delete/Edit early as it requires few resources, and then we can quickly exit(),
 // this is the new AJAX/JS deletion/editing method.
 if (isset($tableaction) && $tableaction != '') {
-    if ($purpose == 'edit') {
-        $enotification = $DB->get_record('block_advnotifications', ['id' => $tableaction]);
+    // Always re-fetch the target notification and authorize against IT, not the submitted blockid.
+    $target = $DB->get_record('block_advnotifications', ['id' => $tableaction]);
+    if (!$target || !$canactonnotification($target)) {
+        throw new moodle_exception('advnotifications_err_nocapability', 'block_advnotifications');
+    }
 
-        $enotification->date_from = date('Y-m-d', $enotification->date_from);
-        $enotification->date_to = date('Y-m-d', $enotification->date_to);
+    if ($purpose == 'edit') {
+        $enotification = clone $target;
+
+        $enotification->date_from = $enotification->date_from > 0 ? date('Y-m-d', $enotification->date_from) : '';
+        $enotification->date_to = $enotification->date_to > 0 ? date('Y-m-d', $enotification->date_to) : '';
 
         if ($ajax) {
             echo json_encode($enotification);
             exit();
         } else {
             redirect(
-                new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
+                new moodle_url('/blocks/advnotifications/pages/notifications.php', $redirectparams),
                 get_string('advnotifications_err_nojsedit', 'block_advnotifications')
             );
         }
@@ -178,31 +222,31 @@ if (isset($tableaction) && $tableaction != '') {
         $dnotification->deleted_at = time();
         $dnotification->deleted_by = $USER->id;
 
-        $old = $DB->get_record('block_advnotifications', ['id' => $tableaction]);
         $DB->update_record('block_advnotifications', $dnotification);
 
-        $params = [
+        $eventparams = [
             'objectid' => $dnotification->id,
             'other' => [
-                'old_title' => $old->title,
-                'old_message' => $old->message,
-                'old_date_from' => $old->date_from,
-                'old_date_to' => $old->date_to,
+                'old_title' => $target->title,
+                'old_message' => $target->message,
+                'old_date_from' => $target->date_from,
+                'old_date_to' => $target->date_to,
             ],
         ];
-        if ($blockinstance > 0) {
-            $params['context'] = context_block::instance($blockinstance);
+        if ((int)$target->blockid > 0) {
+            $tbcontext = context_block::instance($target->blockid, IGNORE_MISSING);
+            $eventparams['context'] = $tbcontext ? $tbcontext : context_system::instance();
         } else {
-            $params['context'] = context_system::instance();
+            $eventparams['context'] = context_system::instance();
         }
-        $event = \block_advnotifications\event\notification_deleted::create($params);
+        $event = \block_advnotifications\event\notification_deleted::create($eventparams);
         $event->trigger();
 
         if ($ajax) {
             echo json_encode(["done" => $tableaction]);
             exit();
         } else {
-            redirect(new moodle_url('/blocks/advnotifications/pages/notifications.php', $params));
+            redirect(new moodle_url('/blocks/advnotifications/pages/notifications.php', $redirectparams));
         }
     } else if ($purpose == 'restore') {
         $rnotification = new stdClass();
@@ -217,16 +261,17 @@ if (isset($tableaction) && $tableaction != '') {
             echo json_encode(["done" => $tableaction]);
             exit();
         } else {
-            redirect(new moodle_url('/blocks/advnotifications/pages/restore.php', $params));
+            redirect(new moodle_url('/blocks/advnotifications/pages/restore.php', $redirectparams));
         }
     } else if ($purpose == 'permdelete') {
         $DB->delete_records('block_advnotifications', ['id' => $tableaction]);
+        $DB->delete_records('block_advnotificationsdissed', ['not_id' => $tableaction]);
 
         if ($ajax) {
             echo json_encode(['done' => $tableaction]);
             exit();
         } else {
-            redirect(new moodle_url('/blocks/advnotifications/pages/restore.php', $params));
+            redirect(new moodle_url('/blocks/advnotifications/pages/restore.php', $redirectparams));
         }
     }
 }
@@ -255,12 +300,22 @@ if ($purpose == 'update') {
     // Only check for id parameter when updating.
     $id = optional_param('id', null, PARAM_INT);
 
-    // Prevent users from making notifications global if they aren't allowed to.
-    if (!$allnotifs) {
-        $global = 0;
+    if (empty($id)) {
+        throw new moodle_exception('advnotifications_err_nocapability', 'block_advnotifications');
     }
 
     $old = $DB->get_record('block_advnotifications', ['id' => $id]);
+    if (!$old || !$canactonnotification($old)) {
+        throw new moodle_exception('advnotifications_err_nocapability', 'block_advnotifications');
+    }
+
+    // Prevent users from making notifications global if they aren't allowed to.
+    if (!$allnotifs) {
+        $global = 0;
+        // Own-managers cannot move a notification to a different block instance.
+        $blockinstance = (int)$old->blockid;
+    }
+
     // Update an existing notification.
     $urow = new stdClass();
 
@@ -279,8 +334,15 @@ if ($purpose == 'update') {
 
     $DB->update_record('block_advnotifications', $urow);
 
-    $params = [
-        'context' => context_block::instance($blockinstance),
+    if ((int)$blockinstance > 0) {
+        $ubcontext = context_block::instance($blockinstance, IGNORE_MISSING);
+        $eventcontext = $ubcontext ? $ubcontext : context_system::instance();
+    } else {
+        $eventcontext = context_system::instance();
+    }
+
+    $eventparams = [
+        'context' => $eventcontext,
         'objectid' => $urow->id,
         'other' => [
             'old_title' => $old->title,
@@ -293,7 +355,7 @@ if ($purpose == 'update') {
             'new_date_to' => $urow->date_to,
         ],
     ];
-    $event = \block_advnotifications\event\notification_updated::create($params);
+    $event = \block_advnotifications\event\notification_updated::create($eventparams);
     $event->trigger();
 
     if ($ajax) {
@@ -301,7 +363,7 @@ if ($purpose == 'update') {
         exit();
     } else {
         redirect(
-            new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
+            new moodle_url('/blocks/advnotifications/pages/notifications.php', $redirectparams),
             get_string('advnotifications_err_nojsedit', 'block_advnotifications')
         );
     }
@@ -330,14 +392,14 @@ if ($purpose == "add") {
             // Return Error.
             // Technically we should never reach this if JS is enabled client-side,
             // but leaving it in case validation slipped past JS.
-            header('HTTP/1.1 400 Bad Request Invalid Input');
+            http_response_code(400);
             header('Content-Type: application/json; charset=UTF-8');
             echo json_encode(['error' => $fields]);
             exit();
         } else {
             // Redirect with Error.
             redirect(
-                new moodle_url('/blocks/advnotifications/pages/notifications.php', $params),
+                new moodle_url('/blocks/advnotifications/pages/notifications.php', $redirectparams),
                 get_string('advnotifications_err_req', 'block_advnotifications', $error)
             );
         }
@@ -346,6 +408,10 @@ if ($purpose == "add") {
     // Prevent users from making notifications global if they aren't allowed to.
     if (!$allnotifs) {
         $global = 0;
+        // Own-managers must create the notification within the block they're managing.
+        if ($blockinstance <= 0) {
+            throw new moodle_exception('advnotifications_err_nocapability', 'block_advnotifications');
+        }
     }
 
     // Create a new notification - Used for both Ajax Calls & NON-JS calls.
@@ -369,13 +435,14 @@ if ($purpose == "add") {
 
     $id = $DB->insert_record('block_advnotifications', $row);
 
-    $params = ['objectid' => $id];
+    $eventparams = ['objectid' => $id];
     if ($blockinstance > 0) {
-        $params['context'] = context_block::instance($blockinstance);
+        $abcontext = context_block::instance($blockinstance, IGNORE_MISSING);
+        $eventparams['context'] = $abcontext ? $abcontext : context_system::instance();
     } else {
-        $params['context'] = context_system::instance();
+        $eventparams['context'] = context_system::instance();
     }
-    $event = \block_advnotifications\event\notification_created::create($params);
+    $event = \block_advnotifications\event\notification_created::create($eventparams);
     $event->trigger();
 
     // Send JSON response if AJAX call was made, otherwise simply redirect to origin page.
@@ -384,6 +451,6 @@ if ($purpose == "add") {
         echo json_encode("I: Successful");
         exit();
     } else {
-        redirect(new moodle_url('/blocks/advnotifications/pages/notifications.php', $params));
+        redirect(new moodle_url('/blocks/advnotifications/pages/notifications.php', $redirectparams));
     }
 }

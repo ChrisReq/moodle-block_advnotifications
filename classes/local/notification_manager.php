@@ -76,7 +76,13 @@ class notification_manager {
             $render = false;
 
             // Check if forever or in date-range.
-            if (($notif->date_from === $notif->date_to) || ($notif->date_from < time() && $notif->date_to > time())) {
+            // A date value of 0 (or equal from/to dates) means "no bound" on that side.
+            $now = time();
+            $datefrom = (int)$notif->date_from;
+            $dateto = (int)$notif->date_to;
+            $afterfrom = ($datefrom <= 0) || ($datefrom <= $now);
+            $beforeto = ($dateto <= 0) || ($dateto >= $now);
+            if (($datefrom === $dateto) || ($afterfrom && $beforeto)) {
                 $render = true;
             }
 

@@ -50,11 +50,14 @@ if (isset($download) && $download !== '') {
 }
 
 // TODO: Use 'new moodle_url()' instead?
-if (isset($blockinstance) && $blockinstance !== '') {
+if (isset($blockinstance) && $blockinstance !== '' && $blockinstance > 0) {
     $param = '?blockid=' . $blockinstance;
     $xparam = '&blockid=' . $blockinstance;
     $params['blockid'] = $blockinstance;
-    $bcontext = context_block::instance($blockinstance);
+    $bcontext = context_block::instance($blockinstance, IGNORE_MISSING);
+    if (!$bcontext) {
+        throw new moodle_exception('advnotifications_err_nocapability', 'block_advnotifications');
+    }
 }
 
 // Force the user to login/create an account to access this page.
@@ -65,7 +68,7 @@ $allnotifs = has_capability('block/advnotifications:managenotifications', $conte
 $ownnotifs = false;
 
 if (!$allnotifs) {
-    if (empty($blockinstance) || !isset($blockinstance) || $blockinstance === -1) {
+    if (empty($blockinstance) || !isset($blockinstance) || $blockinstance === -1 || !isset($bcontext)) {
         throw new moodle_exception('advnotifications_err_nocapability', 'block_advnotifications');
     }
     $ownnotifs = has_capability('block/advnotifications:manageownnotifications', $bcontext);

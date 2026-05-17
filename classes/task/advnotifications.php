@@ -67,21 +67,26 @@ class advnotifications extends \core\task\scheduled_task {
         if (get_config('block_advnotifications', 'auto_delete')) {
             // TODO - echo "\t\t- " . get_string('advnotifications_cron_auto_delete', 'block_advnotifications') . "\n";.
 
+            $now = time();
+
             // Add deleted flag to notifications that's passed their end-date.
+            // Only touch records that are not already deleted so we don't reset
+            // an existing deleted_at and break the auto-perma-delete window.
             $DB->set_field_select(
                 'block_advnotifications',
                 'deleted',
                 '1',
-                'date_to < :now AND date_from <> date_to',
-                ['now' => time()]
+                'date_to < :now AND date_from <> date_to AND deleted = 0',
+                ['now' => $now]
             );
 
-            // Record time of setting 'deleted' flag.
+            // Record time of setting 'deleted' flag - only for records that were
+            // just flagged (deleted_at = 0 means it has never been recorded).
             $DB->set_field_select(
                 'block_advnotifications',
                 'deleted_at',
-                time(),
-                'deleted = 1'
+                $now,
+                'deleted = 1 AND deleted_at = 0'
             );
         }
 
