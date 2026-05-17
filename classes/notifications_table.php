@@ -52,23 +52,26 @@ class advnotifications_notifications_table extends advnotifications_base_table {
             return get_string('advnotifications_edit_label', 'block_advnotifications') . ' | ' .
                     get_string('advnotifications_delete_label', 'block_advnotifications');
         } else {
-            return '<form id="tredit' . $values->id . '" data-edit="' . $values->id . '" method="POST" action="' . $CFG->wwwroot .
-                '/blocks/advnotifications/pages/process.php">
+            $id = (int)$values->id;
+            $blockid = (int)$values->blockid;
+            $action = $CFG->wwwroot . '/blocks/advnotifications/pages/process.php';
+            $editlabel = s(get_string('advnotifications_edit_label', 'block_advnotifications'));
+            $deletelabel = s(get_string('advnotifications_delete_label', 'block_advnotifications'));
+            return '<form id="tredit' . $id . '" data-edit="' . $id . '" method="POST" action="' . s($action) . '">
                     <input type="hidden" class="edit_notification_sesskey" name="sesskey" value="' . sesskey() . '">
                     <input type="hidden" class="edit_notification_purpose" name="purpose" value="edit">
-                    <input type="hidden" class="edit_notification_tableaction" name="tableaction" value="' . $values->id . '">
-                    <input type="hidden" class="edit_notification_blockid" name="blockid" value="' . $values->blockid . '">
+                    <input type="hidden" class="edit_notification_tableaction" name="tableaction" value="' . $id . '">
+                    <input type="hidden" class="edit_notification_blockid" name="blockid" value="' . $blockid . '">
                     <button type="submit" class="edit_notification_edit icon fa fa-pencil-square-o fa-fw" name="edit"
-                        title="' . get_string('advnotifications_edit_label', 'block_advnotifications') . '"></button>
+                        title="' . $editlabel . '"></button>
                 </form>
-                <form id="trdelete' . $values->id . '" data-delete="' . $values->id . '" method="POST" action="' . $CFG->wwwroot .
-                '/blocks/advnotifications/pages/process.php">
+                <form id="trdelete' . $id . '" data-delete="' . $id . '" method="POST" action="' . s($action) . '">
                     <input type="hidden" class="delete_notification_sesskey" name="sesskey" value="' . sesskey() . '">
                     <input type="hidden" class="delete_notification_purpose" name="purpose" value="delete">
-                    <input type="hidden" class="delete_notification_tableaction" name="tableaction" value="' . $values->id . '">
-                    <input type="hidden" class="delete_notification_blockid" name="blockid" value="' . $values->blockid . '">
+                    <input type="hidden" class="delete_notification_tableaction" name="tableaction" value="' . $id . '">
+                    <input type="hidden" class="delete_notification_blockid" name="blockid" value="' . $blockid . '">
                     <button type="submit" class="delete_notification_delete icon fa fa-trash-o fa-fw" name="delete"
-                        title="' . get_string('advnotifications_delete_label', 'block_advnotifications') . '"></button>
+                        title="' . $deletelabel . '"></button>
                 </form>';
         }
     }

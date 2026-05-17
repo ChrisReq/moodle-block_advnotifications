@@ -26,9 +26,9 @@
 defined('MOODLE_INTERNAL') || die;
 
 $plugin->component = 'block_advnotifications';          // Recommended since 2.0.2 (MDL-26035). Required since 3.0 (MDL-48494).
-$plugin->version = 2026022000;                          // YYYYMMDDXX format.
+$plugin->version = 2026051700;                          // YYYYMMDDXX format.
 $plugin->requires = 2024042200;                         // Moodle 4.4.2 minimum.
 $plugin->supported = [404, 500];                        // Supported Moodle branches: 4.4 to 5.0.
 $plugin->incompatible = null;
 $plugin->maturity = MATURITY_STABLE;                    // Code maturity/stability.
-$plugin->release = 'v2.0.0';                            // Human-readable release version.
+$plugin->release = 'v2.0.1';                            // Human-readable release version.

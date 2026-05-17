@@ -33,12 +33,6 @@ require_once($CFG->dirroot . '/blocks/advnotifications/classes/restore_table.php
 // PARAMS.
 $params = [];
 
-// Determines which notification the user wishes to restore.
-$restore = optional_param('restore', null, PARAM_INT);
-
-// Determines which notification the user wishes to delete.
-$delete = optional_param('delete', null, PARAM_INT);
-
 // Determines whether or not to download the table.
 $download = optional_param('download', null, PARAM_ALPHA);
 
@@ -57,11 +51,6 @@ if (!!$download) {
     $params['download'] = 1;
 }
 
-if (!!$delete) {
-    // If wanting to delete a notification, delete from DB immediately before the table is rendered.
-    $DB->delete_records('block_advnotifications', ['id' => $delete]);
-}
-
 // Force the user to login/create an account to access this page.
 require_login();
 
@@ -73,7 +62,10 @@ if (!$allnotifs) {
     if (empty($blockid) || !isset($blockid) || $blockid === -1) {
         throw new moodle_exception('advnotifications_err_nocapability', 'block_advnotifications');
     }
-    $bcontext = context_block::instance($blockid);
+    $bcontext = context_block::instance($blockid, IGNORE_MISSING);
+    if (!$bcontext) {
+        throw new moodle_exception('advnotifications_err_nocapability', 'block_advnotifications');
+    }
     $ownnotifs = has_capability('block/advnotifications:manageownnotifications', $bcontext);
 }
 
